@@ -20,11 +20,11 @@ export default function Navbar() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/v1/auth/checkAuth",
-          { withCredentials: true }
-        );
-        setUserInfo(res.data.user);
+        const res = await axios.get("http://localhost:5000/api/v1/user/me", {
+          withCredentials: true,
+        });
+        console.log(res.data);
+        setUserInfo(res.data);
         setValidAvatar(true); // reset valid avatar on reload
       } catch (err) {
         console.error(err);

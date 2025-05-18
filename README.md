@@ -35,6 +35,22 @@ CREATE TABLE users (
 );
 ```
 
+#### Movies:
+
+```sql
+CREATE TABLE movies (
+  id SERIAL PRIMARY KEY,
+  tmdb_id INTEGER UNIQUE NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  overview TEXT,
+  poster_path TEXT,
+  backdrop_path TEXT,
+  release_date DATE,
+  runtime INTEGER,
+  status TEXT
+);
+```
+
 ---
 
 ---

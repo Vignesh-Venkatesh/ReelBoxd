@@ -9,6 +9,12 @@ import cors from "cors";
 import auth from "./auth/auth.js";
 import requireAuth from "./auth/authMiddleware.js";
 
+import user from "./routes/user/userRoutes.js";
+
+import movie from "./routes/movie/movieRoutes.js";
+
+import movies from "./routes/movie/moviesRoutes.js";
+
 const app = express();
 
 // JSON middleware
@@ -51,4 +57,19 @@ app.get("/api/v1/", (req, res) => {
 // ============================================
 // Auth routes
 app.use("/api/v1/auth", auth);
+// ============================================
+
+// ============================================
+// User routes
+app.use("/api/v1/user", requireAuth, user);
+// ============================================
+
+// ============================================
+// Movie routes
+app.use("/api/v1/movie", requireAuth, movie);
+// ============================================
+
+// ============================================
+// Movies routes
+app.use("/api/v1/movies", requireAuth, movies);
 // ============================================

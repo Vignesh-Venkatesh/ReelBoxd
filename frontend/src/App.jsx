@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 
 import Films from "./pages/Films";
+import Profile from "./pages/Profile";
 
 function App() {
   useEffect(() => {
@@ -27,6 +28,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Films />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/:username"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />
