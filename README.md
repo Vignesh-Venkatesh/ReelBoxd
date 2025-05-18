@@ -51,6 +51,30 @@ CREATE TABLE movies (
 );
 ```
 
+### Reviews
+
+```sql
+CREATE TABLE reviews (
+id SERIAL PRIMARY KEY,
+user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+tmdb_id INTEGER NOT NULL,
+rating INTEGER CHECK (rating BETWEEN 0 AND 5) NOT NULL,
+content TEXT,
+reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+UNIQUE (user_id, tmdb_id)
+);
+```
+
+```sql
+CREATE TABLE review_likes (
+id SERIAL PRIMARY KEY,
+user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
+liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+UNIQUE (user_id, review_id)
+);
+```
+
 ---
 
 ---

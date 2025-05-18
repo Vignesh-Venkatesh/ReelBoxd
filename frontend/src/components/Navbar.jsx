@@ -23,7 +23,6 @@ export default function Navbar() {
         const res = await axios.get("http://localhost:5000/api/v1/user/me", {
           withCredentials: true,
         });
-        console.log(res.data);
         setUserInfo(res.data);
         setValidAvatar(true); // reset valid avatar on reload
       } catch (err) {

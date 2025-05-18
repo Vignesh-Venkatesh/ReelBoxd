@@ -1,6 +1,7 @@
 import express from "express";
 import axios from "axios";
 import pool from "../../db/db.js";
+import dbUtils from "../../db/dbUtils.js";
 const router = express.Router();
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
@@ -40,6 +41,75 @@ router.get("/popular", async (req, res) => {
       err.response?.data || err.message
     );
     res.status(500).json({ error: "Failed to fetch popular movies." });
+  }
+});
+
+// GET /api/v1/movies/popular-reviews?page=1&this-week=true
+router.get("/popular-reviews", async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 12;
+  const offset = (page - 1) * limit;
+  const thisWeek = req.query["this-week"] === "true";
+
+  try {
+    let reviews, totalCount;
+
+    [reviews, totalCount] = await Promise.all([
+      dbUtils.getPopularReviews(limit, offset, thisWeek),
+      dbUtils.getPopularReviewCount(thisWeek),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.status(200).json({
+      totalCount,
+      totalPages,
+      currentPage: page,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+      reviews,
+    });
+  } catch (err) {
+    console.error("Error fetching popular reviews", err);
+    res.status(500).json({ error: "Failed to fetch popular reviews." });
+  }
+});
+
+// GET /api/v1/movies/latest-reviews?page=1&all=true
+router.get("/latest-reviews", async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 12;
+  const offset = (page - 1) * limit;
+  const getAll = req.query.all === "true";
+
+  try {
+    let reviews, totalCount;
+
+    if (getAll) {
+      [reviews, totalCount] = await Promise.all([
+        dbUtils.getLatestReviews(limit, offset),
+        dbUtils.getTotalReviewCount(),
+      ]);
+    } else {
+      [reviews, totalCount] = await Promise.all([
+        dbUtils.getUniqueLatestReviews(limit, offset),
+        dbUtils.getUniqueTotalReviewCount(),
+      ]);
+    }
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.status(200).json({
+      totalCount,
+      totalPages,
+      currentPage: page,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+      reviews,
+    });
+  } catch (err) {
+    console.error("Error fetching paginated reviews", err);
+    res.status(500).json({ error: "Failed to fetch latest reviews." });
   }
 });
 

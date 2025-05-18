@@ -8,8 +8,8 @@ const router = express.Router();
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
 // Fetches movie from TMDB and caches it in DB
-const cacheMovieFromTMDB = async (tmdb_id) => {
-  const url = `https://api.themoviedb.org/3/movie/${tmdb_id}?language=en-US`;
+export const cacheMovieFromTMDB = async (tmdb_id) => {
+  const url = `https://api.themoviedb.org/3/movie/${tmdb_id}`;
 
   try {
     const { data } = await axios.get(url, {
@@ -29,14 +29,7 @@ const cacheMovieFromTMDB = async (tmdb_id) => {
       status,
     } = data;
 
-    const insertQuery = `
-      INSERT INTO movies (
-        tmdb_id, title, overview, poster_path, backdrop_path, release_date, runtime, status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING *;
-    `;
-
-    const result = await pool.query(insertQuery, [
+    const inserted = await dbUtils.insertMovieInfo(
       tmdb_id,
       title,
       overview,
@@ -44,10 +37,10 @@ const cacheMovieFromTMDB = async (tmdb_id) => {
       backdrop_path,
       release_date,
       runtime,
-      status,
-    ]);
+      status
+    );
 
-    return result.rows[0];
+    return await dbUtils.getMovieInfo(tmdb_id);
   } catch (err) {
     console.error(
       "Error fetching from TMDB:",

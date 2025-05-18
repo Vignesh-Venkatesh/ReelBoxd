@@ -1,4 +1,4 @@
-export default function PosterLarge({
+export default function PosterSmall({
   id,
   title,
   image_path,
@@ -6,8 +6,8 @@ export default function PosterLarge({
   release_date,
 }) {
   return (
-    <div className="h-[345px] w-[230px] tooltip tooltip-bottom tooltip-secondary">
-      <div className="tooltip-content text-xs shadow-lg">
+    <div className="h-[105px] w-[75px] tooltip tooltip-secondary tooltip-bottom">
+      <div className="tooltip-content text-xs  shadow-lg">
         <div className="">
           {title} ({release_date.slice(0, 4)})
         </div>
@@ -17,7 +17,7 @@ export default function PosterLarge({
         alt={title}
         loading="lazy"
         onLoad={() => setLoading(false)}
-        className="w-full h-full rounded-lg border-4 border-transparent hover:border-secondary duration-300 tansition-colors cursor-pointer"
+        className="w-full h-full rounded-sm border-2 border-transparent hover:border-secondary duration-300 tansition-colors cursor-pointer"
       />
     </div>
   );

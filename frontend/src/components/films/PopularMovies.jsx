@@ -4,20 +4,17 @@ import PosterLarge from "../posters/PosterLarge";
 
 export default function PopularMovies() {
   const [movies, setMovies] = useState([]);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(null);
 
   useEffect(() => {
     const fetchPopularMovies = async () => {
       try {
-        setLoading(false);
+        setLoading(true);
         const res = await axios.get(
-          `http://localhost:5000/api/v1/movies/popular?page=${page}`,
+          `http://localhost:5000/api/v1/movies/popular`,
           { withCredentials: true }
         );
         setMovies(res.data.results); // setting results
-        setTotalPages(res.data.totalPages); // total pages
       } catch (err) {
         console.error("Failed to fetch popular movies", err);
       } finally {
@@ -26,7 +23,7 @@ export default function PopularMovies() {
     };
 
     fetchPopularMovies();
-  }, [page]);
+  }, []);
 
   return (
     <div className="w-[950px] mx-auto mt-6">
@@ -51,11 +48,14 @@ export default function PopularMovies() {
             </div>
           ) : (
             <div className="flex justify-between">
-              {movies.slice(0, 4).map((movie) => (
+              {movies.slice(0, 4).map((movie, idx) => (
                 <PosterLarge
-                  key={movie.id}
+                  key={idx}
+                  id={movie.id}
                   title={movie.title}
                   image_path={movie.poster_path}
+                  release_date={movie.release_date}
+                  setLoading={setLoading}
                 />
               ))}
             </div>
