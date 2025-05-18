@@ -108,4 +108,13 @@ router.post("/logout", (req, res) => {
   });
 });
 
+// GET /api/v1/auth/checkAuth
+router.get("/checkAuth", (req, res) => {
+  if (req.session.user) {
+    return res.status(200).json({ user: req.session.user });
+  } else {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+});
+
 export default router;

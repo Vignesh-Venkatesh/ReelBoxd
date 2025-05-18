@@ -1,7 +1,39 @@
-export default function App() {
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import { useEffect } from "react";
+
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+import Home from "./pages/Home";
+
+import Films from "./pages/Films";
+
+function App() {
+  useEffect(() => {
+    // set default theme on app load
+    document.documentElement.setAttribute("data-theme", "night");
+  }, []);
+
   return (
-    <div>
-      <h1>Hello World!</h1>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+
+          <Route
+            path="/films"
+            element={
+              <ProtectedRoute>
+                <Films />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
+
+export default App;
