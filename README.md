@@ -35,6 +35,8 @@ CREATE TABLE users (
 );
 ```
 
+---
+
 #### Movies:
 
 ```sql
@@ -50,6 +52,8 @@ CREATE TABLE movies (
   status TEXT
 );
 ```
+
+---
 
 ### Reviews
 
@@ -96,3 +100,65 @@ UNIQUE (user_id, review_id)
   - log out user.
 
 ---
+
+---
+
+### File Structure - with Description
+
+#### Frontend
+
+##### `components/`
+
+###### `advertisements/`
+
+- **`LargeAd.jsx`**
+  - Displays a large advertisement banner (`950px × 100px`).
+  - Currently, this links to my personal portfolio since the project is not monetized. The ad serves as a placeholder, aligning with the Letterboxd aesthetic for portfolio purposes.
+
+###### `films/`
+
+Components for the `Films.jsx` page.
+
+- **`JustReviewed.jsx`**
+
+  - Fetches and displays recently reviewed movies. Only posters are shown in a 12-column CSS grid layout.
+
+- **`PopularMovies.jsx`**
+
+  - Fetches and displays the most popular movies this week. Uses flexbox to show the top 4 movies in a row.
+
+- **`PopularReviews.jsx`**
+  - Fetches and displays the most liked reviews from this week.
+
+###### `homepage/`
+
+Components for the `Home.jsx` page.
+
+- **`Login.jsx`**
+
+  - Contains the login form UI and logic.
+
+- **`SignUp.jsx`**
+  - Contains the sign-up form with optional avatar and bio fields.
+
+###### `movie/`
+
+Components for the `Movie.jsx` page.
+
+- **`MovieInfo.jsx`**
+
+  - Fetches and displays detailed information about a specific movie selected by the user.
+
+- **`MovieLatestReviews.jsx`**
+  - Used by `MovieInfo.jsx` to fetch and display the latest reviews for the current movie.
+
+###### `posters/`
+
+Components used to display movie posters in different sizes.
+
+- **`PosterLarge.jsx`**
+
+  - Displays large posters (`345px × 230px`), used primarily in featured sections.
+
+- **`PosterSmall.jsx`**
+  - Displays smaller posters (`105px × 75px`), used in compact review or listing views.
