@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 
 import Films from "./pages/Films";
 import Profile from "./pages/Profile";
+import Movie from "./pages/Movie";
 
 function App() {
   useEffect(() => {
@@ -28,6 +29,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <Films />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Movie Routes */}
+          <Route
+            path="/movie/:tmdb_id"
+            element={
+              <ProtectedRoute>
+                <Movie />
               </ProtectedRoute>
             }
           />

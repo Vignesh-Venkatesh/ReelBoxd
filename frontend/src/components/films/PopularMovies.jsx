@@ -51,7 +51,7 @@ export default function PopularMovies() {
               {movies.slice(0, 4).map((movie, idx) => (
                 <PosterLarge
                   key={idx}
-                  id={movie.id}
+                  id={movie.tmdb_id}
                   title={movie.title}
                   image_path={movie.poster_path}
                   release_date={movie.release_date}

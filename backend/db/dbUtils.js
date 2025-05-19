@@ -36,6 +36,19 @@ const getUserInfo = async (username) => {
   }
 };
 
+const getUserInfoByID = async (userID) => {
+  try {
+    const result = await pool.query(
+      `SELECT username, avatar, bio, created_at FROM users WHERE id = $1`,
+      [userID]
+    );
+
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error fetching user information", err);
+  }
+};
+
 const getMovieInfo = async (tmdb_id) => {
   try {
     const result = await pool.query(`SELECT * FROM movies WHERE tmdb_id = $1`, [
@@ -78,6 +91,36 @@ const insertMovieInfo = async (
     return result.rows[0];
   } catch (err) {
     console.error("Error inserting movie info", err);
+  }
+};
+
+// helper function to get the latest review of a particular movie
+const getMovieLatestReview = async (tmdb_id, limit, offset) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        reviews.*,
+        users.username,
+        users.avatar,
+        movies.title,
+        movies.poster_path,
+        movies.release_date,
+        COUNT(review_likes.id) AS like_count
+      FROM reviews
+      JOIN movies ON reviews.tmdb_id = movies.tmdb_id
+      JOIN users ON reviews.user_id = users.id
+      LEFT JOIN review_likes ON reviews.id = review_likes.review_id
+      WHERE reviews.tmdb_id = $1
+      GROUP BY reviews.id, users.username, users.avatar, movies.title, movies.poster_path, movies.release_date
+      ORDER BY reviews.reviewed_at DESC
+      LIMIT $2 OFFSET $3;
+      `,
+      [tmdb_id, limit, offset]
+    );
+    return result.rows;
+  } catch (err) {
+    console.error(`Error fetching latest reviews of TMDB ID: ${tmdb_id}`, err);
   }
 };
 
@@ -180,8 +223,10 @@ export default {
   checkUserExists,
   getPassword,
   getUserInfo,
+  getUserInfoByID,
   getMovieInfo,
   insertMovieInfo,
+  getMovieLatestReview,
   getLatestReviews,
   getTotalReviewCount,
   getUniqueLatestReviews,

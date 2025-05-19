@@ -18,7 +18,7 @@ export default function JustReviewed() {
 
         setMovies(res.data.reviews); // setting results
       } catch (err) {
-        console.error("Failed to fetch just reviewed movies movies", err);
+        console.error("Failed to fetch just reviewed movies", err);
       } finally {
         setLoading(false);
       }
@@ -61,7 +61,7 @@ export default function JustReviewed() {
               {movies.map((movie, idx) => (
                 <PosterSmall
                   key={idx}
-                  id={movie.id}
+                  id={movie.tmdb_id}
                   title={movie.title}
                   image_path={movie.poster_path}
                   release_date={movie.release_date}

@@ -50,6 +50,23 @@ export const cacheMovieFromTMDB = async (tmdb_id) => {
   }
 };
 
+// GET /api/v1/movie/:tmdb_id/latest-reviews
+// Returns latest reviews of the movie
+router.get("/:tmdb_id/latest-reviews", async (req, res) => {
+  const { tmdb_id } = req.params;
+  const limit = 12;
+  const page = req.query.page || 1;
+  const offset = (page - 1) * limit;
+  try {
+    let reviews = await dbUtils.getMovieLatestReview(tmdb_id, limit, offset);
+
+    res.status(200).json(reviews);
+  } catch (err) {
+    console.error("Error in GET /movie/:tmdb_id/latest-reviews", err);
+    res.status(500).json({ error: "Failed to retrieve latest movie reviews." });
+  }
+});
+
 // GET /api/v1/movie/:tmdb_id
 // Returns cached movie or fetches from TMDB
 
@@ -63,7 +80,7 @@ router.get("/:tmdb_id", async (req, res) => {
       movie = await cacheMovieFromTMDB(tmdb_id);
     }
 
-    res.status(200).json({ movie });
+    res.status(200).json(movie);
   } catch (err) {
     console.error("Error in GET /movie/:tmdb_id:", err.message);
     res.status(500).json({ error: "Failed to retrieve movie info." });

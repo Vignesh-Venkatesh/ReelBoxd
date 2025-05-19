@@ -1,15 +1,15 @@
 import Navbar from "../components/Navbar";
-
 import PopularMovies from "../components/films/PopularMovies";
 import LargeAd from "../components/advertisements/LargeAd";
 import JustReviewed from "../components/films/JustReviewed";
 import PopularReviews from "../components/films/PopularReviews";
+import Footer from "../components/Footer";
 
 export default function Films() {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="w-[950px] mx-auto">
+      <main className="w-[950px] mx-auto flex-grow">
         {/* popular movies */}
         <PopularMovies></PopularMovies>
         {/* large ad */}
@@ -31,6 +31,7 @@ export default function Films() {
           <div className="w-3/10"></div>
         </div>
       </main>
-    </>
+      <Footer></Footer>
+    </div>
   );
 }
