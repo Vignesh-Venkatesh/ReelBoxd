@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Films from "./pages/Films";
 import Profile from "./pages/Profile";
 import Movie from "./pages/Movie";
+import UserWatched from "./components/profile/UserWatched";
 
 function App() {
   useEffect(() => {
@@ -43,8 +44,18 @@ function App() {
             }
           />
 
+          {/* User Routes */}
           <Route
-            path="/profile/:username"
+            path="/user/:username/watched"
+            element={
+              <ProtectedRoute>
+                <UserWatched />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/user/:username"
             element={
               <ProtectedRoute>
                 <Profile />

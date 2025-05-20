@@ -139,9 +139,14 @@ export default function Navbar() {
                   <button className="btn btn-sm btn-ghost">Home</button>
                 </li>
               </Link>
-              <Link to={`/profile/${userInfo.username}`}>
+              <Link to={`/user/${userInfo.username}`}>
                 <li>
                   <button className="btn btn-sm btn-ghost">My Profile</button>
+                </li>
+              </Link>
+              <Link to={`/user/${userInfo.username}/watched`}>
+                <li>
+                  <button className="btn btn-sm btn-ghost">Watched</button>
                 </li>
               </Link>
               <li>

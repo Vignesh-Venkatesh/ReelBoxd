@@ -42,7 +42,8 @@ router.get("/watched", async (req, res) => {
   try {
     if (username) {
       const watchedMovies = await dbUtils.getWatchedMovies(username);
-      res.status(200).json(watchedMovies);
+      const countWatchedMovies = await dbUtils.countWatchedMovies(username);
+      res.status(200).json({ countWatchedMovies, watchedMovies });
     } else {
       res.status(500).json({ error: "Failed to fetch watched movies" });
     }

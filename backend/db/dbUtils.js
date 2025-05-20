@@ -255,6 +255,19 @@ const getWatchedMovies = async (username) => {
   return result.rows;
 };
 
+// counting all watched movies for a user
+const countWatchedMovies = async (username) => {
+  const query = `
+    SELECT COUNT(*) AS count
+    FROM watched w
+    JOIN users u ON w.user_id = u.id
+    WHERE u.username = $1;
+  `;
+
+  const result = await pool.query(query, [username]);
+  return parseInt(result.rows[0].count);
+};
+
 // checking if a specific movie is watched by a user
 const isMovieWatched = async (username, tmdb_id) => {
   const query = `
@@ -448,6 +461,78 @@ const getUserReviewForMovie = async (username, tmdb_id) => {
   }
 };
 
+// inserting rating for a particular movie by a user
+const insertMovieRatingByUser = async (username, tmdb_id, rating) => {
+  try {
+    const result = await pool.query(
+      `
+      INSERT INTO reviews (user_id, tmdb_id, rating)
+      VALUES ((SELECT id FROM users WHERE username = $1), $2, $3)
+      RETURNING *;
+      `,
+      [username, tmdb_id, rating]
+    );
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error inserting review rating", err);
+  }
+};
+
+// insert review content for a particular movie by a user
+const insertMovieReviewContentByUser = async (username, tmdb_id, content) => {
+  try {
+    const result = await pool.query(
+      `
+      INSERT INTO reviews (user_id, tmdb_id, content)
+      VALUES ((SELECT id FROM users WHERE username = $1), $2, $3)
+      RETURNING *;
+      `,
+      [username, tmdb_id, content]
+    );
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error updating review content", err);
+  }
+};
+
+// update rating for a particular movie by a user
+const updateMovieRatingByUser = async (username, tmdb_id, rating) => {
+  try {
+    const result = await pool.query(
+      `UPDATE reviews
+       SET rating = $3,
+       reviewed_at = CURRENT_TIMESTAMP
+       WHERE user_id = (SELECT id FROM users WHERE username = $1)
+       AND tmdb_id = $2
+        RETURNING *;
+      `,
+      [username, tmdb_id, rating]
+    );
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error updating review rating", err);
+  }
+};
+
+// update review content for a particular movie by a user
+const updateMovieReviewContentByUser = async (username, tmdb_id, content) => {
+  try {
+    const result = await pool.query(
+      `UPDATE reviews
+       SET content = $3,
+       reviewed_at = CURRENT_TIMESTAMP
+       WHERE user_id = (SELECT id FROM users WHERE username = $1)
+       AND tmdb_id = $2
+        RETURNING *;
+      `,
+      [username, tmdb_id, content]
+    );
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error updating review content", err);
+  }
+};
+
 export default {
   checkUserExists,
   getPassword,
@@ -464,6 +549,7 @@ export default {
   getPopularReviewCount,
   insertWatched,
   getWatchedMovies,
+  countWatchedMovies,
   isMovieWatched,
   deleteWatched,
   insertFavorite,
@@ -475,4 +561,8 @@ export default {
   getWatchlistMovies,
   isMovieWatchlisted,
   getUserReviewForMovie,
+  insertMovieRatingByUser,
+  insertMovieReviewContentByUser,
+  updateMovieRatingByUser,
+  updateMovieReviewContentByUser,
 };
