@@ -38,4 +38,24 @@ router.get("/me", async (req, res) => {
   }
 });
 
+// GET /api/v1/user/review/:tmdb_id
+// Get a review by the logged-in user for a specific movie
+router.get("/review/:tmdb_id", async (req, res) => {
+  try {
+    const user = req.session.user;
+    const tmdb_id = parseInt(req.params.tmdb_id, 10);
+
+    const review = await dbUtils.getUserReviewForMovie(user.username, tmdb_id);
+
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    res.status(200).json(review);
+  } catch (err) {
+    console.error("Error fetching review", err);
+    res.status(500).json({ error: "Internal Server Error." });
+  }
+});
+
 export default router;

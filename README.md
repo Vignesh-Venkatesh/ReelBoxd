@@ -55,7 +55,46 @@ CREATE TABLE movies (
 
 ---
 
-### Reviews
+#### WatchList:
+
+```sql
+CREATE TABLE watchlist (
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  tmdb_id INTEGER NOT NULL,
+  added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, tmdb_id)
+);
+```
+
+---
+
+#### Favorites:
+
+```sql
+CREATE TABLE favorites (
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  tmdb_id INTEGER NOT NULL,
+  added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, tmdb_id)
+);
+```
+
+---
+
+#### Watched:
+
+```sql
+CREATE TABLE watched (
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  tmdb_id INTEGER NOT NULL,
+  watched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, tmdb_id)
+);
+```
+
+---
+
+#### Reviews
 
 ```sql
 CREATE TABLE reviews (

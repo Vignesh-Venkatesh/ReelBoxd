@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 import MovieLatestReviews from "./MovieLatestReviews";
+import Actions from "./Actions";
 
 export default function MovieInfo() {
   const { tmdb_id } = useParams();
@@ -76,7 +77,9 @@ export default function MovieInfo() {
                 />
               </div>
 
-              <div className="mt-2">Actions</div>
+              <div className="mt-2">
+                <Actions tmdb_id={tmdb_id}></Actions>
+              </div>
             </div>
             {/* Title, release year, overview */}
             <div className="mt-4">

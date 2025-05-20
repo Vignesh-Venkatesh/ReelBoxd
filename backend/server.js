@@ -15,6 +15,8 @@ import movie from "./routes/movie/movieRoutes.js";
 
 import movies from "./routes/movie/moviesRoutes.js";
 
+import action from "./routes/actions/actionRoutes.js";
+
 const app = express();
 
 // JSON middleware
@@ -72,4 +74,9 @@ app.use("/api/v1/movie", requireAuth, movie);
 // ============================================
 // Movies routes
 app.use("/api/v1/movies", requireAuth, movies);
+// ============================================
+
+// ============================================
+// Action routes
+app.use("/api/v1/actions", requireAuth, action);
 // ============================================

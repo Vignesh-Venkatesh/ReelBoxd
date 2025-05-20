@@ -1,5 +1,6 @@
 import pool from "../db/db.js";
 
+// checking if a particular user exists
 const checkUserExists = async (username) => {
   try {
     const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [
@@ -11,6 +12,7 @@ const checkUserExists = async (username) => {
   }
 };
 
+// getting the password of the user
 const getPassword = async (username) => {
   try {
     const result = await pool.query(
@@ -23,6 +25,7 @@ const getPassword = async (username) => {
   }
 };
 
+// getting information about the user by username
 const getUserInfo = async (username) => {
   try {
     const result = await pool.query(
@@ -36,6 +39,7 @@ const getUserInfo = async (username) => {
   }
 };
 
+// getting information about the user by userID
 const getUserInfoByID = async (userID) => {
   try {
     const result = await pool.query(
@@ -49,6 +53,7 @@ const getUserInfoByID = async (userID) => {
   }
 };
 
+// getting information about a particular movie
 const getMovieInfo = async (tmdb_id) => {
   try {
     const result = await pool.query(`SELECT * FROM movies WHERE tmdb_id = $1`, [
@@ -60,6 +65,7 @@ const getMovieInfo = async (tmdb_id) => {
   }
 };
 
+// inserting a movie
 const insertMovieInfo = async (
   tmdb_id,
   title,
@@ -147,7 +153,6 @@ const getLatestReviews = async (limit, offset) => {
     console.error("Error fetching latest reviews with movie info", err);
   }
 };
-
 const getTotalReviewCount = async () => {
   try {
     const result = await pool.query(`SELECT COUNT(*) FROM reviews;`);
@@ -182,7 +187,6 @@ const getUniqueLatestReviews = async (limit, offset) => {
     console.error("Error fetching unique movie reviews", err);
   }
 };
-
 const getUniqueTotalReviewCount = async () => {
   try {
     const result = await pool.query(
@@ -209,7 +213,6 @@ const getPopularReviews = async (limit, offset, thisWeek = false) => {
   const result = await pool.query(baseQuery, [limit, offset]);
   return result.rows;
 };
-
 const getPopularReviewCount = async (thisWeek = false) => {
   const countQuery = `
     SELECT COUNT(*) FROM reviews
@@ -217,6 +220,232 @@ const getPopularReviewCount = async (thisWeek = false) => {
   `;
   const result = await pool.query(countQuery);
   return parseInt(result.rows[0].count, 10);
+};
+
+// inserting a new record into the watched table
+const insertWatched = async (username, tmdb_id) => {
+  try {
+    const result = await pool.query(
+      `
+      INSERT INTO watched (user_id, tmdb_id)
+      SELECT id, $2 FROM users WHERE username = $1;
+      `,
+      [username, tmdb_id]
+    );
+
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error inserting into watched table", err);
+    throw err;
+  }
+};
+
+// getting all watched movies for a user
+const getWatchedMovies = async (username) => {
+  const query = `
+    SELECT m.*
+    FROM watched w
+    JOIN users u ON w.user_id = u.id
+    JOIN movies m ON w.tmdb_id = m.tmdb_id
+    WHERE u.username = $1
+    ORDER BY w.watched_at DESC;
+  `;
+
+  const result = await pool.query(query, [username]);
+  return result.rows;
+};
+
+// checking if a specific movie is watched by a user
+const isMovieWatched = async (username, tmdb_id) => {
+  const query = `
+    SELECT 1
+    FROM watched w
+    JOIN users u ON w.user_id = u.id
+    WHERE u.username = $1 AND w.tmdb_id = $2
+    LIMIT 1;
+  `;
+
+  const result = await pool.query(query, [username, tmdb_id]);
+  return result.rowCount > 0;
+};
+
+// deleting a record from watched table
+const deleteWatched = async (username, tmdb_id) => {
+  const query = `
+    DELETE FROM watched
+    WHERE user_id = (SELECT id FROM users WHERE username = $1)
+    AND tmdb_id = $2;
+  `;
+
+  await pool.query(query, [username, tmdb_id]);
+};
+
+// adding to favorites
+const insertFavorite = async (username, tmdb_id) => {
+  try {
+    const result = await pool.query(
+      `
+      INSERT INTO favorites (user_id, tmdb_id)
+      SELECT id, $2 FROM users WHERE username = $1
+      RETURNING *;
+      `,
+      [username, tmdb_id]
+    );
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error inserting into favorites table", err);
+    throw err;
+  }
+};
+
+// removing from favorites
+const deleteFavorite = async (username, tmdb_id) => {
+  try {
+    await pool.query(
+      `
+      DELETE FROM favorites
+      WHERE user_id = (SELECT id FROM users WHERE username = $1)
+      AND tmdb_id = $2;
+      `,
+      [username, tmdb_id]
+    );
+  } catch (err) {
+    console.error("Error deleting from favorites table", err);
+    throw err;
+  }
+};
+
+// getting all favorite movies
+const getFavoriteMovies = async (username) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT m.*
+      FROM favorites f
+      JOIN users u ON f.user_id = u.id
+      JOIN movies m ON f.tmdb_id = m.tmdb_id
+      WHERE u.username = $1
+      ORDER BY f.favorited_at DESC;
+      `,
+      [username]
+    );
+    return result.rows;
+  } catch (err) {
+    console.error("Error fetching favorite movies", err);
+    throw err;
+  }
+};
+
+// checking if movie is favorited
+const isMovieFavorited = async (username, tmdb_id) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 1 FROM favorites
+      WHERE user_id = (SELECT id FROM users WHERE username = $1)
+      AND tmdb_id = $2;
+      `,
+      [username, tmdb_id]
+    );
+    return result.rowCount > 0;
+  } catch (err) {
+    console.error("Error checking if movie is favorited", err);
+    throw err;
+  }
+};
+
+// adding to watchlist
+const insertWatchlist = async (username, tmdb_id) => {
+  try {
+    const result = await pool.query(
+      `
+      INSERT INTO watchlist (user_id, tmdb_id)
+      SELECT id, $2 FROM users WHERE username = $1
+      RETURNING *;
+      `,
+      [username, tmdb_id]
+    );
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error inserting into watchlist table", err);
+    throw err;
+  }
+};
+
+// removing from watchlist
+const deleteWatchlist = async (username, tmdb_id) => {
+  try {
+    await pool.query(
+      `
+      DELETE FROM watchlist
+      WHERE user_id = (SELECT id FROM users WHERE username = $1)
+      AND tmdb_id = $2;
+      `,
+      [username, tmdb_id]
+    );
+  } catch (err) {
+    console.error("Error deleting from watchlist table", err);
+    throw err;
+  }
+};
+
+// getting all watchlist movies
+const getWatchlistMovies = async (username) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT m.*
+      FROM watchlist w
+      JOIN users u ON w.user_id = u.id
+      JOIN movies m ON w.tmdb_id = m.tmdb_id
+      WHERE u.username = $1
+      ORDER BY w.watchlisted_at DESC;
+      `,
+      [username]
+    );
+    return result.rows;
+  } catch (err) {
+    console.error("Error fetching watchlist movies", err);
+    throw err;
+  }
+};
+
+// checking if movie is watchlisted
+const isMovieWatchlisted = async (username, tmdb_id) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 1 FROM watchlist
+      WHERE user_id = (SELECT id FROM users WHERE username = $1)
+      AND tmdb_id = $2;
+      `,
+      [username, tmdb_id]
+    );
+    return result.rowCount > 0;
+  } catch (err) {
+    console.error("Error checking if movie is watchlisted", err);
+    throw err;
+  }
+};
+
+// getting user review for particular movie
+const getUserReviewForMovie = async (username, tmdb_id) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT r.*, u.username
+      FROM reviews r
+      JOIN users u ON r.user_id = u.id
+      WHERE u.username = $1 AND r.tmdb_id = $2;
+      `,
+      [username, tmdb_id]
+    );
+
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error fetching user review for movie", err);
+    throw err;
+  }
 };
 
 export default {
@@ -233,4 +462,17 @@ export default {
   getUniqueTotalReviewCount,
   getPopularReviews,
   getPopularReviewCount,
+  insertWatched,
+  getWatchedMovies,
+  isMovieWatched,
+  deleteWatched,
+  insertFavorite,
+  deleteFavorite,
+  getFavoriteMovies,
+  isMovieFavorited,
+  insertWatchlist,
+  deleteWatchlist,
+  getWatchlistMovies,
+  isMovieWatchlisted,
+  getUserReviewForMovie,
 };
