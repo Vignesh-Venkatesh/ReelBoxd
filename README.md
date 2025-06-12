@@ -2,6 +2,38 @@
 
 > **_NOTE:_** The `README` is bound to change.
 
+## Schema
+
+### Users
+
+```sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(30) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    bio TEXT DEFAULT '',
+    avatar_url TEXT DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### Movies
+
+```sql
+CREATE TABLE movies (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL,
+  original_title TEXT,
+  overview TEXT,
+  poster_path TEXT,
+  backdrop_path TEXT,
+  release_date DATE,
+  status TEXT
+);
+```
+
+---
+
 ## API Endpoints
 
 ### Auth
@@ -9,26 +41,26 @@
 `POST /auth/register`
 
 - Auth: Not Required
-- Description: Registering a new user
-- Status: _Incomplete_
+- Description: Registering a new user (username, password, avatar, bio)
+- Status: _Complete_
 
 `POST /auth/login`
 
 - Auth: Not Required
 - Description: Logs in user
-- Status: _Incomplete_
+- Status: _Complete_
 
 `POST /auth/logout`
 
 - Auth: Required
 - Description: Logs out user
-- Status: _Incomplete_
+- Status: _Complete_
 
 `GET /auth/me`
 
 - Auth: Required
 - Description: Returns the current authenticated user
-- Status: _Incomplete_
+- Status: _Complete_
 
 ---
 
@@ -38,7 +70,7 @@
 
 - Auth: Not Required
 - Description: Gets public profile of the user
-- Status: _Incomplete_
+- Status: _Complete_
 
 `GET /users/:username/reviews`
 
@@ -78,7 +110,7 @@
 
 - Auth: Not Required
 - Description: Gets full info on a movie (title, poster, genres, year, etc.)
-- Status: _Incomplete_
+- Status: _Complete_
 
 `GET /movies/popular`
 
