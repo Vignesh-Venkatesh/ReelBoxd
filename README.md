@@ -115,14 +115,21 @@ CREATE TABLE movies (
 `GET /movies/popular`
 
 - Auth: Not Required
-- Query: `?page=1&limit=20`
+- Query: `?page=x`
 - Description: Gets trending/popular movies
-- Status: _Incomplete_
+- Status: _Complete_
+
+`GET /movies/popular`
+
+- Auth: Not Required
+- Query: `?page=x`
+- Description: Gets now showing movies
+- Status: _Complete_
 
 `GET /movies/search`
 
 - Auth: Not Required
-- Query: `?movie=Example`
+- Query: `?movie=Example&page=x`
 - Description: Search movies by title
 - Status: _Incomplete_
 
